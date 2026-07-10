@@ -1,0 +1,21 @@
+# Entorn virtual
+.venv/
+
+# Cachés i compilats de Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Eines comunes de Python
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Fitxers d'entorn locals
+.env
+.env.*
+
+# Metadades d'editor / SO
+.vscode/
+.idea/
+.DS_Store
