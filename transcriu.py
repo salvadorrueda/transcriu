@@ -98,7 +98,7 @@ def transcriu(args):
             frases.append(text)
             if porta_retalls_actiu:
                 try:
-                    pyperclip.copy("\n".join(frases))
+                    pyperclip.copy(" ".join(frases))
                 except pyperclip.PyperclipException as e:
                     porta_retalls_actiu = False
                     print(f"(no es pot copiar al porta-retalls, es continua sense: {e})",
