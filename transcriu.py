@@ -9,6 +9,7 @@ la feina pesada es fa al núvol.
 import argparse
 import contextlib
 import os
+import subprocess
 import sys
 
 # Si no ens executem amb el Python del venv però el venv existeix al costat
@@ -42,6 +43,23 @@ def sense_soroll_alsa():
     finally:
         os.dup2(stderr_original, 2)
         os.close(stderr_original)
+
+
+def copia_al_porta_retalls(text):
+    """Copia el text al porta-retalls sense que es perdi en sortir.
+
+    A X11 la selecció la manté viu el procés que l'ha copiada. Llancem xclip
+    en una sessió pròpia (setsid) perquè el Ctrl+C que atura l'script no el
+    mati i el text segueixi disponible després de sortir. Si no hi ha xclip,
+    es recorre a pyperclip com fins ara.
+    """
+    try:
+        p = subprocess.Popen(["xclip", "-selection", "clipboard"],
+                             stdin=subprocess.PIPE, close_fds=True,
+                             start_new_session=True)
+        p.communicate(input=text.encode("utf-8"))
+    except FileNotFoundError:
+        pyperclip.copy(text)
 
 
 def llista_microfons():
@@ -98,8 +116,8 @@ def transcriu(args):
             frases.append(text)
             if porta_retalls_actiu:
                 try:
-                    pyperclip.copy(" ".join(frases))
-                except pyperclip.PyperclipException as e:
+                    copia_al_porta_retalls(" ".join(frases))
+                except (OSError, pyperclip.PyperclipException) as e:
                     porta_retalls_actiu = False
                     print(f"(no es pot copiar al porta-retalls, es continua sense: {e})",
                           file=sys.stderr)
